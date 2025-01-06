@@ -2,17 +2,29 @@ using System.Net.Http.Headers;
 using System.Text;
 using Common;
 using Newtonsoft.Json;
+using sdk.demo.src.api.action_plan.ActionPlanService;
+using sdk.demo.src.api.animation.AnimationService;
+using sdk.demo.src.api.appointment.AppointmentService;
+using sdk.demo.src.api.user.UserService;
 public class APIClient
 {
     private readonly string _baseUrl;
     private static readonly HttpClient _httpClient = new HttpClient();
-
+    public User Users { get; }
+    public ActionPlan ActionPlans { get; }
+    public Animation Animations { get; }
+    public Appointment Appointments { get; }
     public APIClient(string baseUrl)
     {
         _baseUrl = baseUrl;
 
         _accessToken = CacheUtils.Get("accessToken");
         _refreshToken = CacheUtils.Get("refreshToken");
+
+        Users = new User(this);
+        ActionPlans = new ActionPlan(this);
+        Animations = new Animation(this);
+        Appointments = new Appointment(this);
     }
 
     private string? _accessToken;
@@ -32,41 +44,10 @@ public class APIClient
 
     public async Task<string> AuthenticateUser(string username, string password)
     {
-        var url = $"{_baseUrl}/users/login-password";
-        var payload = new
-        {
-            UserName = username,
-            Password = password
-        };
-
-        var requestMessage = new HttpRequestMessage(HttpMethod.Post, url)
-        {
-            Content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json")
-        };
-
-        try
-        {
-            var response = await _httpClient.SendAsync(requestMessage);
-
-            response.EnsureSuccessStatusCode();
-            var responseData = await response.Content.ReadAsStringAsync();
-
-            dynamic data = JsonConvert.DeserializeObject(responseData);
-            string accessToken = data.Data.AccessToken;
-            string refreshToken = data.Data.RefreshToken;
-
-            SetAccessToken(accessToken);
-            SetRefreshToken(refreshToken);
-
-            Console.WriteLine("Authenticated: " + JsonConvert.SerializeObject(JsonConvert.DeserializeObject(responseData), Formatting.Indented));
-
-            return accessToken;
-        }
-        catch (Exception ex)
-        {
-            throw new Exception("Authentication failed: " + ex.Message);
-        }
+        var authService = new AuthService(_baseUrl);
+        return await authService.AuthenticateUser(username, password);
     }
+
     public async Task<string> RefreshAccessToken()
     {
         if (_refreshToken == null)
@@ -74,32 +55,10 @@ public class APIClient
             throw new Exception("Refresh token is not available");
         }
 
-        var url = $"{_baseUrl}/auth/refresh";
-        var payload = new { RefreshToken = _refreshToken };
-
-        var requestMessage = new HttpRequestMessage(HttpMethod.Post, url)
-        {
-            Content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json")
-        };
-
-        try
-        {
-            var response = await _httpClient.SendAsync(requestMessage);
-            response.EnsureSuccessStatusCode();
-            var responseData = await response.Content.ReadAsStringAsync();
-
-            dynamic data = JsonConvert.DeserializeObject(responseData);
-            string accessToken = data.AccessToken;
-
-            SetAccessToken(accessToken);
-            return accessToken;
-        }
-        catch (Exception ex)
-        {
-            throw new Exception("Token refresh failed: " + ex.Message);
-        }
+        var authService = new AuthService(_baseUrl);
+        return await authService.RefreshAccessToken(_refreshToken);
     }
-    
+
     protected internal async Task<string> Request(string endpoint, HttpMethod method, object? data = null)
     {
         try
@@ -137,7 +96,7 @@ public class APIClient
 
             return responseContent;
         }
-        
+
         catch (HttpRequestException ex)
         {
             throw new Exception("Request failed: " + ex.Message);

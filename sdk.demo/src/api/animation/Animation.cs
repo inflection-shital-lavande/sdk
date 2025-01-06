@@ -5,19 +5,24 @@ using sdk.demo.src.api.animation.AnimationValidation;
 using sdk.demo.src.api.animation.AnimationModel;
 
 namespace sdk.demo.src.api.animation.AnimationService;
-public static class Animation
+public class Animation
 {
-    public static Task<string> Create(this APIClient client, AnimationCreateModel animation)
+    private readonly APIClient _client;
+    public Animation(APIClient client)
     {
-        return client.Request("/assets/animations", HttpMethod.Post, animation);
+        _client = client;
+    }
+    public Task<string> Create(AnimationCreateModel animation)
+    {
+        return _client.Request("/assets/animations", HttpMethod.Post, animation);
     }
 
-    public static Task<string> GetById(this APIClient client, string animationId)
+    public Task<string> GetById(string animationId)
     {
-        return client.Request($"/assets/animations/{animationId}", HttpMethod.Get);
+        return _client.Request($"/assets/animations/{animationId}", HttpMethod.Get);
     }
 
-    public static Task<string> Search(this APIClient client, AnimationSearchFilters searchFilters)
+    public Task<string> Search(AnimationSearchFilters searchFilters)
     {
         var queryParameters = new List<string>();
 
@@ -26,20 +31,20 @@ public static class Animation
 
         var queryString = string.Join("&", queryParameters);
 
-        return client.Request($"/assets/animations/search?{queryString}", HttpMethod.Get);
+        return _client.Request($"/assets/animations/search?{queryString}", HttpMethod.Get);
     }
 
-    public static Task<string> Update(this APIClient client, string animationId, AnimationUpdateModel animation)
+    public Task<string> Update(string animationId, AnimationUpdateModel animation)
     {
-        return client.Request($"/assets/animations/{animationId}", HttpMethod.Put, animation);
+        return _client.Request($"/assets/animations/{animationId}", HttpMethod.Put, animation);
     }
 
-    public static Task<string> Delete(this APIClient client, string animationId)
+    public Task<string> Delete(string animationId)
     {
-        return client.Request($"/assets/animations/{animationId}", HttpMethod.Delete);
+        return _client.Request($"/assets/animations/{animationId}", HttpMethod.Delete);
     }
 
-    public static async Task ExecuteAnimationOperations(APIClient client)
+    public async Task ExecuteAnimationOperations()
     {
         var faker = new Faker("en");
 
@@ -62,13 +67,14 @@ public static class Animation
             }
             return;
         }
-        var createResponse = await client.Create(animationCreateData);
+
+        var createResponse = await Create(animationCreateData);
         dynamic createdAnimation = JsonConvert.DeserializeObject(createResponse);
         Console.WriteLine("Create: " + JsonConvert.SerializeObject(createdAnimation, Formatting.Indented));
 
         string animationId = createdAnimation.Data.id.ToString();
 
-        var retrievedResponse = await client.GetById(animationId);
+        var retrievedResponse = await GetById(animationId);
         dynamic retrieved = JsonConvert.DeserializeObject(retrievedResponse);
         Console.WriteLine("GetById: " + JsonConvert.SerializeObject(retrieved, Formatting.Indented));
 
@@ -93,7 +99,7 @@ public static class Animation
             return;
         }
 
-        var updateResponse = await client.Update(animationId, animationupdatedData);
+        var updateResponse = await Update(animationId, animationupdatedData);
         dynamic updated = JsonConvert.DeserializeObject(updateResponse);
         Console.WriteLine("Update: " + JsonConvert.SerializeObject(updated, Formatting.Indented));
 
@@ -113,11 +119,11 @@ public static class Animation
             return;
         }
 
-        var searchResponse = await client.Search(searchFiltersData);
+        var searchResponse = await Search(searchFiltersData);
         dynamic searchResults = JsonConvert.DeserializeObject(searchResponse);
         Console.WriteLine("Search Results: " + JsonConvert.SerializeObject(searchResults, Formatting.Indented));
 
-        var deleteResponse = await client.Delete(animationId);
+        var deleteResponse = await Delete(animationId);
         dynamic deleted = JsonConvert.DeserializeObject(deleteResponse);
         Console.WriteLine("Delete: " + JsonConvert.SerializeObject(deleted, Formatting.Indented));
     }

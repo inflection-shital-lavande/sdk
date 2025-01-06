@@ -5,39 +5,44 @@ using sdk.demo.src.api.action_plan.ActionPlanModel;
 
 namespace sdk.demo.src.api.action_plan.ActionPlanService;
 
-public static class ActionPlan
+public class ActionPlan
 {
-    public static Task<string> Create(this APIClient client, ActionPlanCreateModel actionPlan)
+    private readonly APIClient _client;
+    public ActionPlan(APIClient client)
     {
-        return client.Request("/assets/action-plans", HttpMethod.Post, actionPlan);
+        _client = client;
+    }
+    public Task<string> Create(ActionPlanCreateModel actionPlan)
+    {
+        return _client.Request("/assets/action-plans", HttpMethod.Post, actionPlan);
     }
 
-    public static Task<string> GetById(this APIClient client, string actionPlanId)
+    public Task<string> GetById(string actionPlanId)
     {
-        return client.Request($"/assets/action-plans/{actionPlanId}", HttpMethod.Get);
+        return _client.Request($"/assets/action-plans/{actionPlanId}", HttpMethod.Get);
     }
 
-    public static Task<string> Search(this APIClient client, ActionPlanSearchFilters searchFilters)
+    public Task<string> Search(ActionPlanSearchFilters searchFilters)
     {
         var queryParams = new List<string>();
 
         if (!string.IsNullOrEmpty(searchFilters.Name)) queryParams.Add($"name={searchFilters.Name}");
 
         var queryString = string.Join("&", queryParams);
-        return client.Request($"/assets/action-plans/search?{queryString}", HttpMethod.Get);
+        return _client.Request($"/assets/action-plans/search?{queryString}", HttpMethod.Get);
     }
 
-    public static Task<string> Update(this APIClient client, string actionPlanId, ActionPlanUpdateModel actionPlan)
+    public Task<string> Update(string actionPlanId, ActionPlanUpdateModel actionPlan)
     {
-        return client.Request($"/assets/action-plans/{actionPlanId}", HttpMethod.Put, actionPlan);
+        return _client.Request($"/assets/action-plans/{actionPlanId}", HttpMethod.Put, actionPlan);
     }
 
-    public static Task<string> Delete(this APIClient client, string actionPlanId)
+    public Task<string> Delete(string actionPlanId)
     {
-        return client.Request($"/assets/action-plans/{actionPlanId}", HttpMethod.Delete);
+        return _client.Request($"/assets/action-plans/{actionPlanId}", HttpMethod.Delete);
     }
 
-    public static async Task ExecuteActionPlanOperations(APIClient client)
+    public async Task ExecuteActionPlanOperations()
     {
         var faker = new Faker("en");
 
@@ -68,20 +73,21 @@ public static class ActionPlan
             }
             return;
         }
-        var createResponse = await client.Create(newActionPlan);
+        
+        var createResponse = await Create(newActionPlan);
         dynamic createdActionPlan = JsonConvert.DeserializeObject(createResponse);
         Console.WriteLine("Create: " + JsonConvert.SerializeObject(createdActionPlan, Formatting.Indented));
 
         string actionPlanId = createdActionPlan.Data.id.ToString();
 
-        var retrievedResponse = await client.GetById(actionPlanId);
+        var retrievedResponse = await GetById(actionPlanId);
         dynamic retrieved = JsonConvert.DeserializeObject(retrievedResponse);
         Console.WriteLine("GetById: " + JsonConvert.SerializeObject(retrieved, Formatting.Indented));
 
         var searchValidator = new ActionPlanSearchFiltersValidator();
         var searchFilters = new ActionPlanSearchFilters
         {
-           Name = newActionPlan.Name
+            Name = newActionPlan.Name
         };
 
         var searchValidationResult = searchValidator.Validate(searchFilters);
@@ -94,7 +100,7 @@ public static class ActionPlan
             return;
         }
 
-        var searchResultsResponse = await client.Search(searchFilters);
+        var searchResultsResponse = await Search(searchFilters);
         dynamic searchResults = JsonConvert.DeserializeObject(searchResultsResponse);
         Console.WriteLine("Search: " + JsonConvert.SerializeObject(searchResults, Formatting.Indented));
 
@@ -118,11 +124,11 @@ public static class ActionPlan
             return;
         }
 
-        var updateResponse = await client.Update(actionPlanId, updatedActionPlan);
+        var updateResponse = await Update(actionPlanId, updatedActionPlan);
         dynamic updated = JsonConvert.DeserializeObject(updateResponse);
         Console.WriteLine("Update: " + JsonConvert.SerializeObject(updated, Formatting.Indented));
 
-        var deleteResponse = await client.Delete(actionPlanId);
+        var deleteResponse = await Delete(actionPlanId);
         dynamic deleted = JsonConvert.DeserializeObject(deleteResponse);
         Console.WriteLine("Delete: " + JsonConvert.SerializeObject(deleted, Formatting.Indented));
     }

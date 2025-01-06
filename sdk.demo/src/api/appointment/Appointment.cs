@@ -7,19 +7,25 @@ using sdk.demo.src.api.appointment.AppointmentModel;
 
 namespace sdk.demo.src.api.appointment.AppointmentService;
 
-public static class Appointment
+public class Appointment
 {
-    public static Task<string> Create(this APIClient client, AppointmentCreateModel appointment)
+    private readonly APIClient _client;
+    public Appointment(APIClient client)
     {
-        return client.Request("/assets/appointments", HttpMethod.Post, appointment);
+        _client = client;
     }
 
-    public static Task<string> GetById(this APIClient client, string appointmentId)
+    public Task<string> Create(AppointmentCreateModel appointment)
     {
-        return client.Request($"/assets/appointments/{appointmentId}", HttpMethod.Get);
+        return _client.Request("/assets/appointments", HttpMethod.Post, appointment);
     }
 
-    public static Task<string> Search(this APIClient client, AppointmentSearchFilters searchQuery)
+    public Task<string> GetById(string appointmentId)
+    {
+        return _client.Request($"/assets/appointments/{appointmentId}", HttpMethod.Get);
+    }
+
+    public Task<string> Search(AppointmentSearchFilters searchQuery)
     {
         var queryParameters = new List<string>();
 
@@ -28,20 +34,20 @@ public static class Appointment
 
         var queryString = queryParameters.Any() ? $"?{string.Join("&", queryParameters)}" : string.Empty;
 
-        return client.Request($"/assets/appointments/search{queryString}", HttpMethod.Get);
+        return _client.Request($"/assets/appointments/search{queryString}", HttpMethod.Get);
     }
 
-    public static Task<string> Update(this APIClient client, string appointmentId, AppointmentUpdateModel appointment)
+    public Task<string> Update(string appointmentId, AppointmentUpdateModel appointment)
     {
-        return client.Request($"/assets/appointments/{appointmentId}", HttpMethod.Put, appointment);
+        return _client.Request($"/assets/appointments/{appointmentId}", HttpMethod.Put, appointment);
     }
 
-    public static Task<string> Delete(this APIClient client, string appointmentId)
+    public Task<string> Delete(string appointmentId)
     {
-        return client.Request($"/assets/appointments/{appointmentId}", HttpMethod.Delete);
+        return _client.Request($"/assets/appointments/{appointmentId}", HttpMethod.Delete);
     }
 
-    public static async Task ExecuteAppointmentOperations(APIClient client)
+    public async Task ExecuteAppointmentOperations()
     {
         var faker = new Faker("en");
         var createValidator = new AppointmentCreateModelValidator();
@@ -65,13 +71,13 @@ public static class Appointment
             return;
         }
 
-        var createResponse = await client.Create(appointmentCreateData);
+        var createResponse = await Create(appointmentCreateData);
         dynamic createdAppointment = JsonConvert.DeserializeObject(createResponse);
         Console.WriteLine("Create: " + JsonConvert.SerializeObject(createdAppointment, Formatting.Indented));
 
         string appointmentId = createdAppointment.Data.id.ToString();
 
-        var retrievedResponse = await client.GetById(appointmentId);
+        var retrievedResponse = await GetById(appointmentId);
         dynamic retrieved = JsonConvert.DeserializeObject(retrievedResponse);
         Console.WriteLine("GetById: " + JsonConvert.SerializeObject(retrieved, Formatting.Indented));
 
@@ -96,7 +102,7 @@ public static class Appointment
             return;
         }
 
-        var updateResponse = await client.Update(appointmentId, appointmentUpdatedData);
+        var updateResponse = await Update(appointmentId, appointmentUpdatedData);
         dynamic updated = JsonConvert.DeserializeObject(updateResponse);
         Console.WriteLine("Update: " + JsonConvert.SerializeObject(updated, Formatting.Indented));
 
@@ -115,11 +121,12 @@ public static class Appointment
             }
             return;
         }
-        var searchResultsResponse = await client.Search(searchFiltersData);
+
+        var searchResultsResponse = await Search(searchFiltersData);
         dynamic searchResults = JsonConvert.DeserializeObject(searchResultsResponse);
         Console.WriteLine("Search: " + JsonConvert.SerializeObject(searchResults, Formatting.Indented));
 
-        var deleteResponse = await client.Delete(appointmentId);
+        var deleteResponse = await Delete(appointmentId);
         dynamic deleted = JsonConvert.DeserializeObject(deleteResponse);
         Console.WriteLine("Delete: " + JsonConvert.SerializeObject(deleted, Formatting.Indented));
     }

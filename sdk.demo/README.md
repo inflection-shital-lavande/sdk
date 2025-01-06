@@ -110,6 +110,13 @@ dotnet nuget remove source LocalSDKDemo
 
 
 
+# I use cmd in this project
+
+ dotnet nuget locals all --clear ->If there are any issues in package use this cmd
+ dotnet build --configuration Release   
+ dotnet pack --configuration Release --output ./Package
+ dotnet add package sdk.demo --version 1.0.0 --source "F:\InflectionProject\dotnet_sdk\sdk.demo\sdk.demo\Package"
+
 
 
 

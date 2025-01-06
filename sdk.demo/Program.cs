@@ -1,8 +1,4 @@
 using Microsoft.Extensions.Configuration;
-using sdk.demo.src.api.action_plan.ActionPlanService;
-using sdk.demo.src.api.animation.AnimationService;
-using sdk.demo.src.api.appointment.AppointmentService;
-using sdk.demo.src.api.user.UserService;
 using sdk.demo.SDK;
 public class Program
 {
@@ -32,7 +28,6 @@ public class Program
         {
             Console.WriteLine("API Key is required but missing in the configuration.");
         }
-
         var userName = configuration["USER_NAME"];
         var password = configuration["PASSWORD"];
 
@@ -44,7 +39,6 @@ public class Program
 
         Console.WriteLine("Initializing SDK...");
         var sdk = new SDK(baseUrl);
-
         try
         {
             // Authenticate the user and set the access token
@@ -59,16 +53,17 @@ public class Program
             Console.WriteLine($"Authentication failed: {ex.Message}");
         }
     }
+
     private static async Task ExecuteOperations(SDK sdk)
     {
         try
         {
             // Example operation calls (replace with actual SDK methods)
             Console.WriteLine("Executing operations...");
-            await User.ExecuteUserOperations(sdk.Client);
-            await ActionPlan.ExecuteActionPlanOperations(sdk.Client);
-            await Animation.ExecuteAnimationOperations(sdk.Client);
-            await Appointment.ExecuteAppointmentOperations(sdk.Client);
+            await sdk.User.ExecuteUserOperations();
+            await sdk.ActionPlan.ExecuteActionPlanOperations();
+            await sdk.Animation.ExecuteAnimationOperations();
+            await sdk.Appointment.ExecuteAppointmentOperations();
 
             Console.WriteLine("Operations executed successfully.");
         }
@@ -78,5 +73,3 @@ public class Program
         }
     }
 }
-
-

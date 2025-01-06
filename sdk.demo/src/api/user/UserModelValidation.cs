@@ -43,7 +43,7 @@ public class UserUpdateModelValidator : AbstractValidator<UserUpdateModel>
 {
     public UserUpdateModelValidator()
     {
-      
+
         RuleFor(x => x.FirstName)
             .NotEmpty().WithMessage("FirstName is required.")
             .MaximumLength(50).WithMessage("FirstName cannot be longer than 50 characters.");

@@ -4,19 +4,24 @@ using sdk.demo.src.api.user.UserModel;
 using sdk.demo.src.api.user.UserModelValidation;
 
 namespace sdk.demo.src.api.user.UserService;
-public static class User
+public class User
 {
-    public static Task<string> Create(this APIClient client, UserCreateModel userData)
+    private readonly APIClient _client;
+    public User(APIClient client)
     {
-        return client.Request("/users", HttpMethod.Post, userData);
+        _client = client;
+    }
+    public Task<string> Create(UserCreateModel userData)
+    {
+        return _client.Request("/users", HttpMethod.Post, userData);
     }
 
-    public static Task<string> GetById(this APIClient client, Guid userId)
+    public Task<string> GetById(Guid userId)
     {
-        return client.Request($"/users/{userId}", HttpMethod.Get);
+        return _client.Request($"/users/{userId}", HttpMethod.Get);
     }
 
-    public static Task<string> Search(this APIClient client, UserSearchFilters filters)
+    public Task<string> Search(UserSearchFilters filters)
     {
         var queryParameters = new List<string>();
         if (!string.IsNullOrEmpty(filters.FirstName))
@@ -24,20 +29,20 @@ public static class User
 
         var queryString = queryParameters.Any() ? $"?{string.Join("&", queryParameters)}" : string.Empty;
 
-        return client.Request($"/users/search{queryString}", HttpMethod.Get);
+        return _client.Request($"/users/search{queryString}", HttpMethod.Get);
     }
 
-    public static Task<string> Update(this APIClient client, Guid userId, UserUpdateModel userData)
+    public Task<string> Update(Guid userId, UserUpdateModel userData)
     {
-        return client.Request($"/users/{userId}", HttpMethod.Put, userData);
+        return _client.Request($"/users/{userId}", HttpMethod.Put, userData);
     }
 
-    public static Task<string> Delete(this APIClient client, Guid userId)
+    public Task<string> Delete(Guid userId)
     {
-        return client.Request($"/users/{userId}", HttpMethod.Delete);
+        return _client.Request($"/users/{userId}", HttpMethod.Delete);
     }
 
-    public static async Task ExecuteUserOperations(APIClient client)
+    public async Task ExecuteUserOperations()
     {
         var faker = new Faker("en");
 
@@ -73,7 +78,7 @@ public static class User
             return;
         }
 
-        var newUserResponse = await client.Create(userCreateData);
+        var newUserResponse = await Create(userCreateData);
         dynamic newUser = JsonConvert.DeserializeObject(newUserResponse);
         Console.WriteLine("Create: " + JsonConvert.SerializeObject(newUser, Formatting.Indented));
 
@@ -88,7 +93,7 @@ public static class User
             return;
         }
 
-        var retrievedUserResponse = await client.GetById(userId);
+        var retrievedUserResponse = await GetById(userId);
         dynamic retrievedUser = JsonConvert.DeserializeObject(retrievedUserResponse);
         Console.WriteLine("GetById: " + JsonConvert.SerializeObject(retrievedUser, Formatting.Indented));
 
@@ -108,7 +113,7 @@ public static class User
             return;
         }
 
-        var searchResultsResponse = await client.Search(searchFiltersData);
+        var searchResultsResponse = await Search(searchFiltersData);
         dynamic searchResults = JsonConvert.DeserializeObject(searchResultsResponse);
         Console.WriteLine("Search: " + JsonConvert.SerializeObject(searchResults, Formatting.Indented));
 
@@ -143,11 +148,11 @@ public static class User
             return;
         }
 
-        var updatedUserResponse = await client.Update(userId, userUpdateData);
+        var updatedUserResponse = await Update(userId, userUpdateData);
         dynamic updatedUser = JsonConvert.DeserializeObject(updatedUserResponse);
         Console.WriteLine("Update: " + JsonConvert.SerializeObject(updatedUser, Formatting.Indented));
 
-        var deletedUserResponse = await client.Delete(userId);
+        var deletedUserResponse = await Delete(userId);
         dynamic deletedUser = JsonConvert.DeserializeObject(deletedUserResponse);
         Console.WriteLine("Delete: " + JsonConvert.SerializeObject(deletedUser, Formatting.Indented));
     }
