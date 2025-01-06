@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using sdk.demo.SDK;
+
 public class Program
 {
     public static async Task Main(string[] args)
@@ -28,48 +29,8 @@ public class Program
         {
             Console.WriteLine("API Key is required but missing in the configuration.");
         }
-        var userName = configuration["USER_NAME"];
-        var password = configuration["PASSWORD"];
-
-        if (string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(password))
-        {
-            Console.WriteLine("User credentials are missing in the configuration.");
-            return;
-        }
 
         Console.WriteLine("Initializing SDK...");
         var sdk = new SDK(baseUrl);
-        try
-        {
-            // Authenticate the user and set the access token
-            string accessToken = await sdk.Client.AuthenticateUser(userName, password);
-            sdk.Client.SetAccessToken(accessToken);
-            Console.WriteLine("Access Token Set Successfully.");
-            // Execute operations (Placeholder for actual SDK methods)
-            await ExecuteOperations(sdk);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Authentication failed: {ex.Message}");
-        }
-    }
-
-    private static async Task ExecuteOperations(SDK sdk)
-    {
-        try
-        {
-            // Example operation calls (replace with actual SDK methods)
-            Console.WriteLine("Executing operations...");
-            await sdk.User.ExecuteUserOperations();
-            await sdk.ActionPlan.ExecuteActionPlanOperations();
-            await sdk.Animation.ExecuteAnimationOperations();
-            await sdk.Appointment.ExecuteAppointmentOperations();
-
-            Console.WriteLine("Operations executed successfully.");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"An error occurred while executing operations: {ex.Message}");
-        }
     }
 }

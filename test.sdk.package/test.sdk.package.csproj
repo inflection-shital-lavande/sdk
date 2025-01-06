@@ -10,5 +10,5 @@
   <ItemGroup>
     <PackageReference Include="sdk.demo" Version="1.0.0" />
   </ItemGroup>
-
+	
 </Project>

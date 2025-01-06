@@ -63,7 +63,7 @@ public class Animation
         {
             foreach (var error in createValidationResult.Errors)
             {
-                Console.WriteLine(error.ErrorMessage);
+                Console.WriteLine("Validation error:" + error.ErrorMessage);
             }
             return;
         }
@@ -94,7 +94,7 @@ public class Animation
         {
             foreach (var error in updateValidationResult.Errors)
             {
-                Console.WriteLine(error.ErrorMessage);
+                Console.WriteLine("Validation error:" + error.ErrorMessage);
             }
             return;
         }
@@ -114,7 +114,7 @@ public class Animation
         {
             foreach (var error in searchValidationResult.Errors)
             {
-                Console.WriteLine(error.ErrorMessage);
+                Console.WriteLine("Validation error:" + error.ErrorMessage);
             }
             return;
         }

@@ -1,13 +1,21 @@
-﻿using sdk.demo.SDK;
+﻿using Microsoft.Extensions.Configuration;
+using sdk.demo.SDK;
 
 public class Program
 {
     public static async Task Main(string[] args)
     {
-        const string base_url = "http://localhost:3456/api/v1";
+        var builder = new ConfigurationBuilder()
+                    .SetBasePath(Directory.GetCurrentDirectory())
+                    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                    .AddUserSecrets<Program>();
+
+        var configuration = builder.Build();
+        var apiConfig = configuration.GetSection("APIConfig");
+        var baseUrl = apiConfig["BaseUrl"];
 
         // Initialize SDK with the base URL
-        var sdk = new SDK(base_url);
+        var sdk = new SDK(baseUrl);
         try
         {
             // Authenticate the user and set the access token

@@ -2,12 +2,14 @@ using Newtonsoft.Json;
 using Bogus;
 using sdk.demo.src.api.action_plan.ActionPlanValidation;
 using sdk.demo.src.api.action_plan.ActionPlanModel;
+using FluentValidation;
 
 namespace sdk.demo.src.api.action_plan.ActionPlanService;
 
 public class ActionPlan
 {
     private readonly APIClient _client;
+
     public ActionPlan(APIClient client)
     {
         _client = client;
@@ -60,7 +62,7 @@ public class ActionPlan
         {
             foreach (var error in createValidationResult.Errors)
             {
-                Console.WriteLine(error.ErrorMessage);
+                Console.WriteLine("Validation error:" + error.ErrorMessage);
             }
             return;
         }
@@ -73,7 +75,7 @@ public class ActionPlan
             }
             return;
         }
-        
+
         var createResponse = await Create(newActionPlan);
         dynamic createdActionPlan = JsonConvert.DeserializeObject(createResponse);
         Console.WriteLine("Create: " + JsonConvert.SerializeObject(createdActionPlan, Formatting.Indented));
@@ -95,7 +97,7 @@ public class ActionPlan
         {
             foreach (var error in searchValidationResult.Errors)
             {
-                Console.WriteLine(error.ErrorMessage);
+                Console.WriteLine("Validation error:" + error.ErrorMessage);
             }
             return;
         }
@@ -119,7 +121,7 @@ public class ActionPlan
         {
             foreach (var error in updateValidationResult.Errors)
             {
-                Console.WriteLine(error.ErrorMessage);
+                Console.WriteLine("Validation error:" + error.ErrorMessage);
             }
             return;
         }
