@@ -3,6 +3,7 @@ using FluentValidation;
 using sdk.demo.src.api.action_plan.ActionPlanModel;
 
 namespace sdk.demo.src.api.action_plan.ActionPlanValidation;
+
 public class ActionPlanCreateModelValidator : AbstractValidator<ActionPlanCreateModel>
 {
     public ActionPlanCreateModelValidator()
@@ -50,6 +51,7 @@ public class ActionPlanUpdateModelValidator : AbstractValidator<ActionPlanUpdate
             .When(x => x.Version != null);
     }
 }
+
 public class ActionPlanSearchFiltersValidator : AbstractValidator<ActionPlanSearchFilters>
 {
     public ActionPlanSearchFiltersValidator()
@@ -57,20 +59,5 @@ public class ActionPlanSearchFiltersValidator : AbstractValidator<ActionPlanSear
         RuleFor(x => x.Name)
             .NotEmpty().WithMessage("Name is required.")
             .Length(2, 100).WithMessage("Name must be between 2 and 100 characters.");
-    }
-}
-public class ApiResponseValidator : AbstractValidator<ApiResponse>
-{
-    public ApiResponseValidator()
-    {
-        RuleFor(x => x.Data)
-            .NotNull().WithMessage("Data is required.");
-
-        RuleFor(x => x.Message)
-            .MaximumLength(500).WithMessage("Message cannot exceed 500 characters.")
-            .When(x => x.Message != null);
-
-        RuleFor(x => x.Success)
-            .NotNull().WithMessage("Success flag is required.");
     }
 }

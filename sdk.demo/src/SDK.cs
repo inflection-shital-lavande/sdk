@@ -4,6 +4,7 @@ using sdk.demo.src.api.appointment.AppointmentService;
 using sdk.demo.src.api.user.UserService;
 
 namespace sdk.demo.SDK;
+
 public class SDK
 {
     public APIClient Client { get; set; }

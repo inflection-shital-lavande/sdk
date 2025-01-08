@@ -13,7 +13,6 @@ public class Program
         var configuration = builder.Build();
 
         var apiConfig = configuration.GetSection("APIConfig");
-
         var baseUrl = apiConfig["BaseUrl"];
         var apiKey = apiConfig["ApiKey"];
 
@@ -39,11 +38,9 @@ public class Program
 
         Console.WriteLine("Initializing SDK...");
         var sdk = new SDK(baseUrl);
-
         try
         {
-            // Authenticate the user and set the access token
-            string accessToken = await sdk.Client.AuthenticateUser(userName, "Inflection@123");
+            string accessToken = await sdk.Client.AuthenticateUser(userName, password);
             sdk.Client.SetAccessToken(accessToken);
             Console.WriteLine("Access Token Set Successfully.");
 
@@ -54,14 +51,12 @@ public class Program
             Console.WriteLine($"Authentication failed: {ex.Message}");
         }
     }
-
     private static async Task ExecuteOperations(SDK sdk)
     {
         try
         {
             Console.WriteLine("Executing operations...");
             await sdk.User.ExecuteUserOperations();
-
             Console.WriteLine("Operations executed successfully.");
         }
         catch (Exception ex)
@@ -70,5 +65,6 @@ public class Program
         }
     }
 }
+
 
 

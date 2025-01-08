@@ -2,7 +2,6 @@ using Newtonsoft.Json;
 using Bogus;
 using sdk.demo.src.api.action_plan.ActionPlanValidation;
 using sdk.demo.src.api.action_plan.ActionPlanModel;
-using FluentValidation;
 
 namespace sdk.demo.src.api.action_plan.ActionPlanService;
 
@@ -14,6 +13,7 @@ public class ActionPlan
     {
         _client = client;
     }
+
     public Task<string> Create(ActionPlanCreateModel actionPlan)
     {
         return _client.Request("/assets/action-plans", HttpMethod.Post, actionPlan);

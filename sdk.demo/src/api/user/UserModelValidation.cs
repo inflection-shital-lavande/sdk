@@ -2,6 +2,7 @@ using FluentValidation;
 using sdk.demo.src.api.user.UserModel;
 
 namespace sdk.demo.src.api.user.UserModelValidation;
+
 public class UserCreateModelValidator : AbstractValidator<UserCreateModel>
 {
     public UserCreateModelValidator()
@@ -39,11 +40,11 @@ public class UserCreateModelValidator : AbstractValidator<UserCreateModel>
             .MaximumLength(100).WithMessage("Password cannot be longer than 100 characters.");
     }
 }
+
 public class UserUpdateModelValidator : AbstractValidator<UserUpdateModel>
 {
     public UserUpdateModelValidator()
     {
-
         RuleFor(x => x.FirstName)
             .NotEmpty().WithMessage("FirstName is required.")
             .MaximumLength(50).WithMessage("FirstName cannot be longer than 50 characters.");
@@ -70,6 +71,7 @@ public class UserUpdateModelValidator : AbstractValidator<UserUpdateModel>
          .MaximumLength(100).WithMessage("Password cannot be longer than 100 characters.");
     }
 }
+
 public class UserSearchFiltersValidator : AbstractValidator<UserSearchFilters>
 {
     public UserSearchFiltersValidator()

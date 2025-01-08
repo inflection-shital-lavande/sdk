@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 
 namespace sdk.demo.src.api.action_plan.ActionPlanModel;
+
 public class ActionPlanCreateModel
 {
     [Required]
@@ -43,15 +44,4 @@ public class ActionPlanSearchFilters
     [Required]
     [StringLength(100, MinimumLength = 2)]
     public string Name { get; set; } = string.Empty;
-}
-
-public class ApiResponse
-{
-    [Required]
-    public Dictionary<string, object>? Data { get; set; }
-
-    [StringLength(500, MinimumLength = 2)]
-    public string Message { get; set; } = string.Empty;
-
-    public bool? Success { get; set; }
 }

@@ -4,19 +4,22 @@ using sdk.demo.src.api.user.UserModel;
 using sdk.demo.src.api.user.UserModelValidation;
 
 namespace sdk.demo.src.api.user.UserService;
+
 public class User
 {
     private readonly APIClient _client;
+
     public User(APIClient client)
     {
         _client = client;
     }
+
     public Task<string> Create(UserCreateModel userData)
     {
         return _client.Request("/users", HttpMethod.Post, userData);
     }
 
-    public Task<string> GetById(Guid userId)
+    public Task<string> GetById(string userId)
     {
         return _client.Request($"/users/{userId}", HttpMethod.Get);
     }
@@ -32,12 +35,12 @@ public class User
         return _client.Request($"/users/search{queryString}", HttpMethod.Get);
     }
 
-    public Task<string> Update(Guid userId, UserUpdateModel userData)
+    public Task<string> Update(string userId, UserUpdateModel userData)
     {
         return _client.Request($"/users/{userId}", HttpMethod.Put, userData);
     }
 
-    public Task<string> Delete(Guid userId)
+    public Task<string> Delete(string userId)
     {
         return _client.Request($"/users/{userId}", HttpMethod.Delete);
     }
@@ -82,16 +85,7 @@ public class User
         dynamic newUser = JsonConvert.DeserializeObject(newUserResponse);
         Console.WriteLine("Create: " + JsonConvert.SerializeObject(newUser, Formatting.Indented));
 
-        Guid userId;
-        try
-        {
-            userId = Guid.Parse(newUser.Data.id.ToString());
-        }
-        catch (FormatException)
-        {
-            Console.WriteLine("An error occurred: The provided id is not a valid Guid.");
-            return;
-        }
+        string userId = newUser.Data.id.ToString();
 
         var retrievedUserResponse = await GetById(userId);
         dynamic retrievedUser = JsonConvert.DeserializeObject(retrievedUserResponse);
