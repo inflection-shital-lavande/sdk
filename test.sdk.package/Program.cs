@@ -14,17 +14,14 @@ public class Program
         var apiConfig = configuration.GetSection("APIConfig");
         var baseUrl = apiConfig["BaseUrl"];
 
-        // Initialize SDK with the base URL
         var sdk = new SDK(baseUrl);
         try
         {
-            // Authenticate the user and set the access token
             Console.WriteLine("Authenticating...");
             string accessToken = await sdk.Client.AuthenticateUser("admin", "uHqLYqjh");
             sdk.Client.SetAccessToken(accessToken);
             Console.WriteLine("Authentication successful. Access token set.");
 
-            // Execute operations
             await ExecuteOperations(sdk);
         }
         catch (Exception ex)
@@ -32,6 +29,7 @@ public class Program
             Console.WriteLine($"An error occurred: {ex.Message}");
         }
     }
+
     private static async Task ExecuteOperations(SDK sdk)
     {
         try
