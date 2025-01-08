@@ -67,6 +67,7 @@ Command-
 . UserService.cs — Logic for user management.
 
 ### Step 04: Update the csproj File
+
 <PropertyGroup>
 	  <OutputType>Exe</OutputType>
 	  <TargetFramework>net8.0</TargetFramework>
@@ -129,7 +130,6 @@ cmd-
 a) If there are any issues with the package, you can clear the NuGet cache:
 	dotnet nuget locals all --clear
 	
-
 ### Install Required NuGet Packages -> use in -Step 3
 dotnet add package Microsoft.Extensions.Configuration
 dotnet add package Microsoft.Extensions.Configuration.UserSecrets
