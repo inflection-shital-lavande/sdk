@@ -6,9 +6,11 @@ using sdk.demo.src.api.action_plan.ActionPlanService;
 using sdk.demo.src.api.animation.AnimationService;
 using sdk.demo.src.api.appointment.AppointmentService;
 using sdk.demo.src.api.user.UserService;
+
 public class APIClient
 {
     private readonly string _baseUrl;
+
     private static readonly HttpClient _httpClient = new HttpClient();
     public User Users { get; }
     public ActionPlan ActionPlans { get; }
@@ -102,6 +104,7 @@ public class APIClient
             throw new Exception("Request failed: " + ex.Message);
         }
     }
+
     public void ClearCachedTokens()
     {
         CacheUtils.ClearCache();

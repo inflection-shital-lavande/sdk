@@ -1,5 +1,3 @@
-using System;
-using System.Net.Http;
 using Newtonsoft.Json;
 using Bogus;
 using sdk.demo.src.api.appointment.AppointmentValidation;
@@ -10,6 +8,7 @@ namespace sdk.demo.src.api.appointment.AppointmentService;
 public class Appointment
 {
     private readonly APIClient _client;
+
     public Appointment(APIClient client)
     {
         _client = client;

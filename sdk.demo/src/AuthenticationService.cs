@@ -5,6 +5,7 @@ using Common;
 public class AuthService
 {
     private readonly string _baseUrl;
+
     private static readonly HttpClient _httpClient = new HttpClient();
     public AuthService(string baseUrl)
     {

@@ -1,17 +1,19 @@
-using System;
 using Newtonsoft.Json;
 using Bogus;
 using sdk.demo.src.api.animation.AnimationValidation;
 using sdk.demo.src.api.animation.AnimationModel;
 
 namespace sdk.demo.src.api.animation.AnimationService;
+
 public class Animation
 {
     private readonly APIClient _client;
+
     public Animation(APIClient client)
     {
         _client = client;
     }
+
     public Task<string> Create(AnimationCreateModel animation)
     {
         return _client.Request("/assets/animations", HttpMethod.Post, animation);
